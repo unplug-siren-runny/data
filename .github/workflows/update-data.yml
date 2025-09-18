@@ -21,19 +21,19 @@ jobs:
       - name: Instalar requests
         run: pip install requests
 
-      - name: Ejecutar script para generar CSV y HTML
+      - name: Ejecutar script para generar CSV, HTML y JSON completo
         run: python update_data.py
 
       - name: Subir cambios (condicional)
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add offers.csv index.html
+          git add offers.csv index.html response_complete.json
           if git diff --staged --quiet; then
             echo "No hay cambios para hacer commit, se omite push."
             exit 0
           fi
-          git commit -m "Actualizar datos Binance P2P con HTML estático"
+          git commit -m "Actualizar datos Binance P2P con HTML y JSON completo"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
