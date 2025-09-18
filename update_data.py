@@ -12,6 +12,9 @@ def obtener_datos_binance():
     max_pages = 5
     collected_offers = []
 
+    total_offers_received = 0
+    total_verified_offers = 0
+
     for page in range(1, max_pages + 1):
         payload = {
             "asset": "USDT",
@@ -25,12 +28,20 @@ def obtener_datos_binance():
         response_json = response.json()
         data = response_json.get("data") or []
 
+        print(f"Página {page}: Total ofertas recibidas {len(data)}")
         verified_offers = [offer for offer in data if offer["advertiser"].get("proMerchant")]
-        print(f"Página {page}: {len(verified_offers)} vendedores verificados encontrados.")
+        print(f"Página {page}: Vendedores verificados encontrados: {len(verified_offers)}")
+
+        total_offers_received += len(data)
+        total_verified_offers += len(verified_offers)
+
         if not verified_offers:
-            # No más vendedores verificados, podrías romper el bucle
+            # No hay más vendedores verificados en esta página
             break
         collected_offers.extend(verified_offers)
+
+    print(f"Total ofertas recibidas en todas las páginas: {total_offers_received}")
+    print(f"Total vendedores verificados recolectados: {total_verified_offers}")
 
     if not collected_offers:
         print("No se encontraron vendedores verificados en las páginas consultadas.")
