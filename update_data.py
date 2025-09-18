@@ -9,7 +9,7 @@ def obtener_datos_binance():
         "payTypes": ["Banesco"],
         "tradeType": "SELL",
         "page": 1,
-        "rows": 2
+        "rows": 100  # Cambiado para obtener 100 resultados
     }
 
     response = requests.post(url, json=payload)
@@ -25,10 +25,8 @@ def obtener_datos_binance():
             maximo = offer["adv"]["maxSingleTransAmount"]
             disponible = offer["adv"]["surplusAmount"]
             metodos = ", ".join([m["tradeMethodName"] for m in offer["adv"]["tradeMethods"]])
-
             writer.writerow([nombre, precio, minimo, maximo, disponible, metodos])
 
-    # Generar archivo HTML estático con tabla
     html_content = """
 <!DOCTYPE html>
 <html lang="es">
@@ -44,6 +42,7 @@ def obtener_datos_binance():
     </thead>
     <tbody>
 """
+
     for offer in data:
         nombre = offer["advertiser"]["nickName"]
         precio = offer["adv"]["price"]
@@ -51,7 +50,6 @@ def obtener_datos_binance():
         maximo = offer["adv"]["maxSingleTransAmount"]
         disponible = offer["adv"]["surplusAmount"]
         metodos = ", ".join([m["tradeMethodName"] for m in offer["adv"]["tradeMethods"]])
-
         html_content += f"<tr><td>{nombre}</td><td>{precio}</td><td>{minimo}</td><td>{maximo}</td><td>{disponible}</td><td>{metodos}</td></tr>\n"
 
     html_content += """
