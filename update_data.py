@@ -9,13 +9,13 @@ def obtener_datos_binance():
         "payTypes": ["Banesco"],
         "tradeType": "SELL",
         "page": 1,
-        "rows": 10
+        "rows": 2  # Solo las dos primeras ofertas
     }
 
     response = requests.post(url, json=payload)
     data = response.json().get("data", [])
 
-    # Generar offers.csv
+    # Generar archivo CSV
     with open("offers.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["Nombre", "Precio", "Mínimo", "Máximo"])
@@ -27,7 +27,7 @@ def obtener_datos_binance():
                 offer["adv"]["maxSingleTransAmount"]
             ])
 
-    # Generar index.html estático
+    # Generar archivo HTML estático
     html_content = """
 <!DOCTYPE html>
 <html lang="es">
