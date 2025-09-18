@@ -2,7 +2,7 @@ name: Actualizar datos Binance P2P
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Corre cada hora
+    - cron: '0 * * * *'  # Ejecuta cada hora
   workflow_dispatch:
 
 jobs:
@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-        
+
       - name: Configurar Python
         uses: actions/setup-python@v4
         with:
@@ -21,7 +21,7 @@ jobs:
       - name: Instalar requests
         run: pip install requests
 
-      - name: Ejecutar script para generar datos y HTML
+      - name: Ejecutar script para generar CSV y HTML
         run: python update_data.py
 
       - name: Subir cambios (condicional)
@@ -33,7 +33,7 @@ jobs:
             echo "No hay cambios para hacer commit, se omite push."
             exit 0
           fi
-          git commit -m "Actualización automática de datos Binance P2P con HTML"
+          git commit -m "Actualizar datos Binance P2P con HTML estático"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
