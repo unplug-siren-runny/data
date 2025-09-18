@@ -32,25 +32,19 @@ def obtener_datos_binance():
     html_content = """
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Ofertas Binance P2P - Verified Merchants</title>
-</head>
+<head><meta charset="UTF-8" /><title>Ofertas Binance P2P</title></head>
 <body>
-  <h1>Ofertas Binance P2P (Solo Vendedores Verificados)</h1>
-  <table border="1" cellpadding="5" cellspacing="0">
-    <thead>
-      <tr><th>Nombre</th><th>Precio</th></tr>
-    </thead>
-    <tbody>
+<table border="1">
+<thead><tr><th>Nombre</th><th>Precio</th></tr></thead>
+<tbody>
 """
     for offer in data[:3]:
         nombre = offer["advertiser"]["nickName"]
         precio = offer["adv"]["price"]
         html_content += f"<tr><td>{nombre}</td><td>{precio}</td></tr>\n"
     html_content += """
-    </tbody>
-  </table>
+</tbody>
+</table>
 </body>
 </html>
 """
