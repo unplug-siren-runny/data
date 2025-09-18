@@ -1,40 +1,29 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Tabla de ofertas Binance P2P</title>
+  <title>Ofertas Binance P2P</title>
 </head>
 <body>
   <h1>Ofertas Binance P2P</h1>
-  <table border="1" id="data-table">
+  <table border="1" cellpadding="5" cellspacing="0">
     <thead>
       <tr><th>Nombre</th><th>Precio</th><th>Mínimo</th><th>Máximo</th></tr>
     </thead>
-    <tbody></tbody>
-  </table>
+    <tbody>
+<tr><td>AARH17</td><td>264.400</td><td>23600</td><td>23800</td></tr>
+<tr><td>ChicoMarciano</td><td>264.360</td><td>12000</td><td>133000</td></tr>
+<tr><td>Fenomeno1111</td><td>264.260</td><td>10000</td><td>1400000</td></tr>
+<tr><td>Cambiopan</td><td>264.150</td><td>70000</td><td>600000</td></tr>
+<tr><td>P2P-31b2be4b</td><td>263.400</td><td>15000</td><td>18660</td></tr>
+<tr><td>SCGR--</td><td>262.800</td><td>95000</td><td>4400000</td></tr>
+<tr><td>EJ_CryptoVE</td><td>262.535</td><td>1000</td><td>400000</td></tr>
+<tr><td>LUISHERNANDEZ</td><td>262.530</td><td>4000</td><td>170000</td></tr>
+<tr><td>Bouncer_ca</td><td>262.520</td><td>500</td><td>2000</td></tr>
+<tr><td>P2P-0abc2ffl</td><td>262.500</td><td>300</td><td>6000</td></tr>
 
-  <script>
-    fetch('offers.csv')
-      .then(response => response.text())
-      .then(text => {
-        const rows = text.trim().split('\n');
-        const tbody = document.querySelector('#data-table tbody');
-        rows.slice(1).forEach(row => {
-          const cols = row.split(',');
-          const tr = document.createElement('tr');
-          cols.forEach(col => {
-            const td = document.createElement('td');
-            td.textContent = col;
-            tr.appendChild(td);
-          });
-          tbody.appendChild(tr);
-        });
-      })
-      .catch(err => {
-        const tbody = document.querySelector('#data-table tbody');
-        tbody.innerHTML = '<tr><td colspan="4">Error al cargar los datos.</td></tr>';
-        console.error(err);
-      });
-  </script>
+    </tbody>
+  </table>
 </body>
 </html>
