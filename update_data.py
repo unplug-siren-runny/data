@@ -3,18 +3,25 @@ import csv
 
 def obtener_datos_binance():
     url = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
+
     payload = {
         "asset": "USDT",
         "fiat": "VES",
         "payTypes": ["Banesco"],
         "tradeType": "SELL",
         "page": 1,
-        "rows": 100
+        "rows": 10  # Cambiado a 10 resultados
     }
 
-    response = requests.post(url, json=payload)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0 Safari/537.36",
+        "Accept": "application/json, text/plain, */*",
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
     response_json = response.json()
-    print(response_json)  # Mostrar respuesta completa para debug
+    print(response_json)  # Para debug y verificar contenido
 
     data = response_json.get("data") or []
 
