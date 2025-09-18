@@ -1,7 +1,7 @@
 import requests
-import csv
+import json
 
-def obtener_datos_binance():
+def obtener_json_completo():
     url = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
     payload = {
         "asset": "USDT",
@@ -11,56 +11,12 @@ def obtener_datos_binance():
         "page": 1,
         "rows": 2
     }
-
     response = requests.post(url, json=payload)
-    data = response.json().get("data", [])
-
-    with open("offers.csv", "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow(["Nombre", "Precio", "Mínimo (VES)", "Máximo (VES)", "Método"])
-        for offer in data:
-            # Extraer nombre, precio, min, max y métodos de pago
-            nombre = offer["advertiser"]["nickName"]
-            precio = offer["adv"]["price"]
-            minimo = offer["adv"]["minSingleTransAmount"]
-            maximo = offer["adv"]["maxSingleTransAmount"]
-            metodos = ", ".join([m["tradeMethodName"] for m in offer["adv"]["tradeMethods"]])
-
-            writer.writerow([nombre, precio, minimo, maximo, metodos])
-
-    # Generar archivo HTML estático
-    html_content = """
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Ofertas Binance P2P</title>
-</head>
-<body>
-  <h1>Ofertas Binance P2P con Banesco</h1>
-  <table border="1" cellpadding="5" cellspacing="0">
-    <thead>
-      <tr><th>Nombre</th><th>Precio</th><th>Mínimo (VES)</th><th>Máximo (VES)</th><th>Método</th></tr>
-    </thead>
-    <tbody>
-"""
-    for offer in data:
-        nombre = offer["advertiser"]["nickName"]
-        precio = offer["adv"]["price"]
-        minimo = offer["adv"]["minSingleTransAmount"]
-        maximo = offer["adv"]["maxSingleTransAmount"]
-        metodos = ", ".join([m["tradeMethodName"] for m in offer["adv"]["tradeMethods"]])
-        html_content += f"<tr><td>{nombre}</td><td>{precio}</td><td>{minimo}</td><td>{maximo}</td><td>{metodos}</td></tr>\n"
-
-    html_content += """
-    </tbody>
-  </table>
-</body>
-</html>
-"""
-
-    with open("index.html", "w", encoding="utf-8") as f:
-        f.write(html_content)
+    data = response.json()
+    # Guardar JSON completo en archivo para análisis
+    with open("response_complete.json", "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+    return data
 
 if __name__ == "__main__":
-    obtener_datos_binance()
+    obtener_json_completo()
