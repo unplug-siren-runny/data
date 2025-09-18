@@ -3,14 +3,14 @@ import csv
 
 def obtener_datos_binance():
     url = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
-
     payload = {
         "asset": "USDT",
         "fiat": "VES",
         "payTypes": ["Banesco"],
         "tradeType": "SELL",
         "page": 1,
-        "rows": 10  # Cambiado a 10 resultados
+        "rows": 10,
+        "publisherType": "merchant"  # Filtro para vendedores verificados
     }
 
     headers = {
@@ -21,7 +21,7 @@ def obtener_datos_binance():
 
     response = requests.post(url, json=payload, headers=headers)
     response_json = response.json()
-    print(response_json)  # Para debug y verificar contenido
+    print(response_json)  # Para debug y ver respuesta
 
     data = response_json.get("data") or []
 
@@ -42,17 +42,16 @@ def obtener_datos_binance():
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Ofertas Binance P2P</title>
+  <title>Ofertas Binance P2P - Verified Merchants</title>
 </head>
 <body>
-  <h1>Ofertas Binance P2P con Banesco</h1>
+  <h1>Ofertas Binance P2P (Solo Vendedores Verificados)</h1>
   <table border="1" cellpadding="5" cellspacing="0">
     <thead>
       <tr><th>Nombre</th><th>Precio</th><th>Mínimo (VES)</th><th>Máximo (VES)</th><th>Cantidad disponible (USDT)</th><th>Método</th></tr>
     </thead>
     <tbody>
 """
-
     for offer in data:
         nombre = offer["advertiser"]["nickName"]
         precio = offer["adv"]["price"]
@@ -61,7 +60,6 @@ def obtener_datos_binance():
         disponible = offer["adv"]["surplusAmount"]
         metodos = ", ".join([m["tradeMethodName"] for m in offer["adv"]["tradeMethods"]])
         html_content += f"<tr><td>{nombre}</td><td>{precio}</td><td>{minimo}</td><td>{maximo}</td><td>{disponible}</td><td>{metodos}</td></tr>\n"
-
     html_content += """
     </tbody>
   </table>
