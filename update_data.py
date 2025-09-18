@@ -10,7 +10,7 @@ def obtener_datos_binance():
         "payTypes": ["Banesco"],
         "tradeType": "SELL",
         "page": 1,
-        "rows": 10  # Cambiado a 10 resultados
+        "rows": 10
     }
 
     headers = {
@@ -21,7 +21,6 @@ def obtener_datos_binance():
 
     response = requests.post(url, json=payload, headers=headers)
     response_json = response.json()
-    print(response_json)  # Para debug y verificar contenido
 
     data = response_json.get("data") or []
 
@@ -29,13 +28,15 @@ def obtener_datos_binance():
         writer = csv.writer(f)
         writer.writerow(["Nombre", "Precio", "Mínimo (VES)", "Máximo (VES)", "Cantidad disponible (USDT)", "Método"])
         for offer in data:
-            nombre = offer["advertiser"]["nickName"]
-            precio = offer["adv"]["price"]
-            minimo = offer["adv"]["minSingleTransAmount"]
-            maximo = offer["adv"]["maxSingleTransAmount"]
-            disponible = offer["adv"]["surplusAmount"]
-            metodos = ", ".join([m["tradeMethodName"] for m in offer["adv"]["tradeMethods"]])
-            writer.writerow([nombre, precio, minimo, maximo, disponible, metodos])
+            # Solo considerar vendedores certificados
+            if offer["advertiser"].get("proMerchant"):
+                nombre = offer["advertiser"]["nickName"]
+                precio = offer["adv"]["price"]
+                minimo = offer["adv"]["minSingleTransAmount"]
+                maximo = offer["adv"]["maxSingleTransAmount"]
+                disponible = offer["adv"]["surplusAmount"]
+                metodos = ", ".join([m["tradeMethodName"] for m in offer["adv"]["tradeMethods"]])
+                writer.writerow([nombre, precio, minimo, maximo, disponible, metodos])
 
     html_content = """
 <!DOCTYPE html>
@@ -45,7 +46,7 @@ def obtener_datos_binance():
   <title>Ofertas Binance P2P</title>
 </head>
 <body>
-  <h1>Ofertas Binance P2P con Banesco</h1>
+  <h1>Ofertas Binance P2P con Banesco - Verified Merchants</h1>
   <table border="1" cellpadding="5" cellspacing="0">
     <thead>
       <tr><th>Nombre</th><th>Precio</th><th>Mínimo (VES)</th><th>Máximo (VES)</th><th>Cantidad disponible (USDT)</th><th>Método</th></tr>
@@ -54,13 +55,14 @@ def obtener_datos_binance():
 """
 
     for offer in data:
-        nombre = offer["advertiser"]["nickName"]
-        precio = offer["adv"]["price"]
-        minimo = offer["adv"]["minSingleTransAmount"]
-        maximo = offer["adv"]["maxSingleTransAmount"]
-        disponible = offer["adv"]["surplusAmount"]
-        metodos = ", ".join([m["tradeMethodName"] for m in offer["adv"]["tradeMethods"]])
-        html_content += f"<tr><td>{nombre}</td><td>{precio}</td><td>{minimo}</td><td>{maximo}</td><td>{disponible}</td><td>{metodos}</td></tr>\n"
+        if offer["advertiser"].get("proMerchant"):
+            nombre = offer["advertiser"]["nickName"]
+            precio = offer["adv"]["price"]
+            minimo = offer["adv"]["minSingleTransAmount"]
+            maximo = offer["adv"]["maxSingleTransAmount"]
+            disponible = offer["adv"]["surplusAmount"]
+            metodos = ", ".join([m["tradeMethodName"] for m in offer["adv"]["tradeMethods"]])
+            html_content += f"<tr><td>{nombre}</td><td>{precio}</td><td>{minimo}</td><td>{maximo}</td><td>{disponible}</td><td>{metodos}</td></tr>\n"
 
     html_content += """
     </tbody>
