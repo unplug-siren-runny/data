@@ -1,7 +1,6 @@
 import requests
 import csv
 import subprocess
-
 def obtener_datos_binance():
     url = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
     payload = {
@@ -10,8 +9,8 @@ def obtener_datos_binance():
         "payTypes": ["Banesco"],
         "tradeType": "SELL",
         "page": 1,
-        "rows": 10,
-        "publisherType": "merchant"  # Filtro para vendedores verificados
+        "rows": 3,  # Cambiado a 3
+        "publisherType": "merchant"
     }
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0 Safari/537.36",
@@ -20,12 +19,12 @@ def obtener_datos_binance():
     }
     response = requests.post(url, json=payload, headers=headers)
     response_json = response.json()
-    print(response_json)  # Para debug y ver respuesta
+    print(response_json)
     data = response_json.get("data") or []
     with open("offers.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["Nombre", "Precio", "Mínimo (VES)", "Máximo (VES)", "Cantidad disponible (USDT)", "Método"])
-        for offer in data:
+        for offer in data[:3]:  # Recorrer solo 3 ítems
             nombre = offer["advertiser"]["nickName"]
             precio = offer["adv"]["price"]
             minimo = offer["adv"]["minSingleTransAmount"]
@@ -48,7 +47,7 @@ def obtener_datos_binance():
     </thead>
     <tbody>
 """
-    for offer in data:
+    for offer in data[:3]:
         nombre = offer["advertiser"]["nickName"]
         precio = offer["adv"]["price"]
         minimo = offer["adv"]["minSingleTransAmount"]
