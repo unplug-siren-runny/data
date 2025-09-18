@@ -1,6 +1,5 @@
 import requests
 import csv
-import subprocess
 
 def obtener_datos_binance():
     url = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
@@ -10,7 +9,7 @@ def obtener_datos_binance():
         "payTypes": ["Banesco"],
         "tradeType": "SELL",
         "page": 1,
-        "rows": 10,
+        "rows": 3,  # Solo los primeros 3 resultados
         "publisherType": "merchant"  # Filtro para vendedores verificados
     }
     headers = {
@@ -24,15 +23,11 @@ def obtener_datos_binance():
     data = response_json.get("data") or []
     with open("offers.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["Nombre", "Precio", "Mínimo (VES)", "Máximo (VES)", "Cantidad disponible (USDT)", "Método"])
-        for offer in data:
+        writer.writerow(["Nombre", "Precio"])
+        for offer in data[:3]:  # Solo primeros 3
             nombre = offer["advertiser"]["nickName"]
             precio = offer["adv"]["price"]
-            minimo = offer["adv"]["minSingleTransAmount"]
-            maximo = offer["adv"]["maxSingleTransAmount"]
-            disponible = offer["adv"]["surplusAmount"]
-            metodos = ", ".join([m["tradeMethodName"] for m in offer["adv"]["tradeMethods"]])
-            writer.writerow([nombre, precio, minimo, maximo, disponible, metodos])
+            writer.writerow([nombre, precio])
     html_content = """
 <!DOCTYPE html>
 <html lang="es">
@@ -44,18 +39,14 @@ def obtener_datos_binance():
   <h1>Ofertas Binance P2P (Solo Vendedores Verificados)</h1>
   <table border="1" cellpadding="5" cellspacing="0">
     <thead>
-      <tr><th>Nombre</th><th>Precio</th><th>Mínimo (VES)</th><th>Máximo (VES)</th><th>Cantidad disponible (USDT)</th><th>Método</th></tr>
+      <tr><th>Nombre</th><th>Precio</th></tr>
     </thead>
     <tbody>
 """
-    for offer in data:
+    for offer in data[:3]:  # Solo primeros 3
         nombre = offer["advertiser"]["nickName"]
         precio = offer["adv"]["price"]
-        minimo = offer["adv"]["minSingleTransAmount"]
-        maximo = offer["adv"]["maxSingleTransAmount"]
-        disponible = offer["adv"]["surplusAmount"]
-        metodos = ", ".join([m["tradeMethodName"] for m in offer["adv"]["tradeMethods"]])
-        html_content += f"<tr><td>{nombre}</td><td>{precio}</td><td>{minimo}</td><td>{maximo}</td><td>{disponible}</td><td>{metodos}</td></tr>\n"
+        html_content += f"<tr><td>{nombre}</td><td>{precio}</td></tr>\n"
     html_content += """
     </tbody>
   </table>
@@ -65,16 +56,5 @@ def obtener_datos_binance():
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
 
-def git_commit_and_push():
-    subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
-    subprocess.run(["git", "config", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
-    subprocess.run(["git", "add", "offers.csv", "index.html"], check=True)
-    commit_result = subprocess.run(["git", "commit", "-m", "Actualizar tasas Binance P2P automáticamente"], capture_output=True, text=True)
-    if "nothing to commit" in commit_result.stdout:
-        print("No hay cambios para commitear.")
-    else:
-        subprocess.run(["git", "push"], check=True)
-
 if __name__ == "__main__":
     obtener_datos_binance()
-    git_commit_and_push()
