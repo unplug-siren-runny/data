@@ -9,11 +9,14 @@ def obtener_datos_binance():
         "payTypes": ["Banesco"],
         "tradeType": "SELL",
         "page": 1,
-        "rows": 100  # Cambiado para obtener 100 resultados
+        "rows": 100
     }
 
     response = requests.post(url, json=payload)
-    data = response.json().get("data", [])
+    response_json = response.json()
+    print(response_json)  # Mostrar respuesta completa para debug
+
+    data = response_json.get("data") or []
 
     with open("offers.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
