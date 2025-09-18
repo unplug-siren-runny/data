@@ -29,12 +29,11 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add offers.csv
-          if git diff --cached --quiet; then
-            echo "No hay cambios para hacer commit."
+          if git diff --staged --quiet; then
+            echo "No hay cambios para hacer commit, se omite push."
             exit 0
-          else
-            git commit -m "Actualización automática de datos Binance P2P"
-            git push
           fi
+          git commit -m "Actualización automática de datos Binance P2P"
+          git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
