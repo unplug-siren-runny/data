@@ -24,4 +24,4 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        python update_rates.py  # Aquí tu script para obtener las tasas y hacer commit
+        python update_data.py
