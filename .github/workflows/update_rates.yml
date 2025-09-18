@@ -1,0 +1,27 @@
+name: Update Binance Rates
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'  # Ejecutar cada 15 minutos
+  workflow_dispatch:  # Permite ejecutar manualmente desde GitHub UI
+
+jobs:
+  update_rates:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: pip install requests
+
+    - name: Run script to update rates and push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        python update_rates.py  # Aquí tu script para obtener las tasas y hacer commit
